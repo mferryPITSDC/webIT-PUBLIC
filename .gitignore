@@ -1,0 +1,5 @@
+# Local host-specific config & live credentials — never commit.
+# Anchored to the root so the shared lib/config.php loader is NOT ignored.
+/config.php
+storage/site.local.php
+sync.log
