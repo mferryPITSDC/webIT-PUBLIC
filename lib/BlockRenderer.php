@@ -58,9 +58,11 @@ final class BlockRenderer
     private static function text(array $p): string
     {
         $h = !empty($p['heading']) ? '<h2>' . self::e($p['heading']) . '</h2>' : '';
-        // Fall back to the legacy single-text payload shape.
-        $body = nl2br(self::e($p['body'] ?? $p['text'] ?? ''));
-        return "<div class=\"blk blk-text\">{$h}<p>{$body}</p></div>";
+        // body is sanitised HTML on the platform at write time, then synced down
+        // read-only; emit raw so rich formatting renders. (Legacy 'text' shape is
+        // escaped for safety since it predates sanitisation.)
+        $body = isset($p['body']) ? (string) $p['body'] : nl2br(self::e($p['text'] ?? ''));
+        return "<div class=\"blk blk-text\">{$h}{$body}</div>";
     }
 
     private static function image(array $p): string
