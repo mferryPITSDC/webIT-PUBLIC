@@ -28,7 +28,11 @@ try {
 $path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/');
 
 if ($path === '') {
-    $page = $pdo->query("SELECT * FROM pages WHERE status = 'published' ORDER BY position, id LIMIT 1")->fetch();
+    // Homepage: published page with slug "home", else the alphabetically-first.
+    $page = $pdo->query("SELECT * FROM pages WHERE status = 'published' AND slug = 'home' LIMIT 1")->fetch();
+    if ($page === false) {
+        $page = $pdo->query("SELECT * FROM pages WHERE status = 'published' ORDER BY title LIMIT 1")->fetch();
+    }
 } else {
     $stmt = $pdo->prepare("SELECT * FROM pages WHERE slug = ? AND status = 'published' LIMIT 1");
     $stmt->execute([$path]);
@@ -45,7 +49,7 @@ if ($page === false || $page === null) {
     $blocks = $bs->fetchAll();
 }
 
-$nav = $pdo->query("SELECT slug, title FROM pages WHERE status = 'published' ORDER BY position, id")->fetchAll();
+$nav = $pdo->query("SELECT slug, title FROM pages WHERE status = 'published' ORDER BY title")->fetchAll();
 
 // Active products power any product_grid blocks on the page.
 $products = $pdo->query("SELECT * FROM products WHERE status = 'active' ORDER BY name")->fetchAll();
