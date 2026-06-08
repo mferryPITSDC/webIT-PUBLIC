@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/lib/config.php';
+require dirname(__DIR__) . '/lib/BlockRenderer.php';
 
 // First launch: send the operator to the pairing/setup wizard.
 if (!webit_is_configured()) {
@@ -45,5 +46,8 @@ if ($page === false || $page === null) {
 }
 
 $nav = $pdo->query("SELECT slug, title FROM pages WHERE status = 'published' ORDER BY position, id")->fetchAll();
+
+// Active products power any product_grid blocks on the page.
+$products = $pdo->query("SELECT * FROM products WHERE status = 'active' ORDER BY name")->fetchAll();
 
 require dirname(__DIR__) . '/templates/layout.php';
